@@ -7,19 +7,30 @@ This project implements a particle system using OpenGL with GPU acceleration.
 ## Project Structure
 
 ```
-/OpenGL-GPU-Particles-2
-├── /ext                        # External dependencies
-│   ├── /glfw-3.4.bin.WIN64     # Or any higher version
-│   ├── /glm
-│   ├── /stb-master          
-│   └── /imgui-master           # (To be added manually if needed)
-├── /OpenGL_Particles           # Source code
-│   ├── /resources              # Textures, models, etc.
-│   ├── /shaders                # GLSL shader files
-│   ├── Config.h                # Auto-generated config header
-│   └── Main.cpp                # Main entry point
-├── CMakeLists.txt              # Root CMake script
-└── config.h.in                 # Template for Config.h
+/OpenGL_Particles
+├── /debug
+│   └── GL_Debug.h
+├── /glad
+│   ├── glad.c
+│   ├── glad.h
+│   └── khrplatform.h
+├── /resources
+│   ├── fireSheet5x5_alpha.png
+│   └── smoke_sheet.png
+├── /shaders
+│   ├── compute.glsl
+│   ├── fragment.glsl
+│   └── vertex.glsl
+├── /systems
+│   ├── ParticleSystem.cpp
+│   ├── ParticleSystem.h
+│   └── stb_image_impl.cpp
+├── /utilities
+│   ├── ShaderUtils.cpp
+│   ├── ShaderUtils.h
+│   └── Config.h
+├── OpenGL_Particles.cpp
+└── CMakeLists.txt
 ```
 
 ## CMake Setup
@@ -123,7 +134,7 @@ target_link_libraries(OpenGL_Particles OpenGL::GL)
 
 `Config.h.in` is a template used to generate `Config.h` during CMake configuration. 
 
-```c
+```
 #pragma once
 
 // Define paths for resources and shaders
