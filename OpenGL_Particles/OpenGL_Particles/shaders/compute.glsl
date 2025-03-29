@@ -15,6 +15,7 @@ layout(std430, binding = 0) buffer ParticleBuffer
 };
 
 uniform float deltaTime;
+uniform float maxLifetime;
 uniform vec3 particleEmitterCurrentPos;
 uniform vec3 prevParticleEmitterPos;
 uniform bool emitterAlive;
@@ -84,7 +85,6 @@ void main()
             particles[gid].velocity.x += 0.05 * deltaTime * sin(particles[gid].position.y * 0.5 + deltaTime * 0.2);
     
             // Age-based scaling
-            float maxLifetime = 3.0; // Maximum lifetime
             float currentLifetime = particles[gid].velocity.w;
             float lifePercent = 1.0 - (currentLifetime / maxLifetime);
     

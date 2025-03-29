@@ -1,5 +1,8 @@
 // smoke_simulation.cpp
 #include "ParticleSystem.h"
+
+#include <GLFW/glfw3.h>
+
 #include "stb_image.h"
 #include "../utilities/ShaderUtils.h"
 #include "../Config.h"
@@ -11,6 +14,9 @@ particle_simulation::ParticleSimulation::ParticleSimulation(int maxParticles, co
     currentEmitterLocation = emitterLocation;
     previousEmitterLocation = glm::vec3(0.0f);
     bPause = true;
+    frameRate = 60.0f;
+    maxParticleLifetime = 3.0f;
+    totalFrames = 25;
 }
 
 particle_simulation::ParticleSimulation::~ParticleSimulation()
@@ -64,9 +70,13 @@ void particle_simulation::ParticleSimulation::init()
     glBindTexture(GL_TEXTURE_2D, smokeTexture);
 
     int width, height, channels;
-    unsigned char* data = stbi_load((std::string(RESOURCE_PATH) + "/fireSheet5x5_alpha.png").c_str(), &width, &height, &channels, 0);
 
-    if (data)
+    if (unsigned char* data = stbi_load(
+        (std::string(RESOURCE_PATH) + "/fireSheet5x5_alpha.png").c_str(),
+        &width,
+        &height,
+        &channels,
+        0))
     {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
@@ -83,9 +93,15 @@ void particle_simulation::ParticleSimulation::createParticles()
 {
     std::vector<Particle> particles(maxParticles);
 
+    glUseProgram(renderProgram);
+    ShaderUtils::setUniformIVec2(renderProgram, "gridSize", glm::vec2(5, 5));
+    ShaderUtils::setUniformFloat(renderProgram, "maxLifetime", maxParticleLifetime);
+
+    
     glUseProgram(computeProgram);
     ShaderUtils::setUniformVec3(computeProgram, "particleEmitterOrigin", currentEmitterLocation);
-
+    ShaderUtils::setUniformFloat(computeProgram, "maxLifetime", maxParticleLifetime);
+    
     for (int i = 0; i < maxParticles; i++)
     {
         particles[i].velocity = glm::vec4(0.0f);
@@ -121,9 +137,7 @@ void particle_simulation::ParticleSimulation::render(const glm::mat4& viewMatrix
     glUseProgram(renderProgram);
     ShaderUtils::setUniformMat4(renderProgram, "viewProjMatrix", viewProjMatrix);
     ShaderUtils::setUniformMat4(renderProgram, "viewMatrix", viewMatrix);
-
-    float frameRate = 60.0f;
-    int totalFrames = 25;
+    
     float time = glfwGetTime();
     int currentFrame = static_cast<int>(time * frameRate) % totalFrames;
     ShaderUtils::setUniformInt(renderProgram, "currentFrame", currentFrame);

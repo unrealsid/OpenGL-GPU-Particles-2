@@ -107,16 +107,25 @@ namespace ShaderUtils
 
     void setUniformMat4(GLuint program, const std::string& name, const glm::mat4& matrix)
     {
-        GLint location = glGetUniformLocation(program, name.c_str());
+        GLuint location = glGetUniformLocation(program, name.c_str());
         if (location != -1)
         {
             glUniformMatrix4fv(location, 1, GL_FALSE, &matrix[0][0]);
         }
     }
 
+    void setUniformIVec2(GLuint program, const std::string& name, const glm::ivec2& vector)
+    {
+        GLuint location = glGetUniformLocation(program, name.c_str());
+        if (location != -1)
+        {
+            glUniform2i(location, vector.x, vector.y);
+        }
+    }
+
     void setUniformVec3(GLuint program, const std::string& name, const glm::vec3& vector)
     {
-        GLint location = glGetUniformLocation(program, name.c_str());
+        GLuint location = glGetUniformLocation(program, name.c_str());
         if (location != -1)
         {
             glUniform3fv(location, 1, &vector[0]);
@@ -125,7 +134,7 @@ namespace ShaderUtils
 
     void setUniformFloat(GLuint program, const std::string& name, float value)
     {
-        GLint location = glGetUniformLocation(program, name.c_str());
+        GLuint location = glGetUniformLocation(program, name.c_str());
         if (location != -1)
         {
             glUniform1f(location, value);
@@ -134,7 +143,7 @@ namespace ShaderUtils
 
     void setUniformInt(GLuint program, const std::string& name, int value)
     {
-        GLint location = glGetUniformLocation(program, name.c_str());
+        GLuint location = glGetUniformLocation(program, name.c_str());
         if (location != -1)
         {
             glUniform1i(location, value);

@@ -1,17 +1,10 @@
 #pragma once
 
 #include "../glad/glad.h"
-#include <GLFW/glfw3.h>
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
-#include <vector>
 #include <random>
-#include <ctime>
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <iostream>
 
 namespace particle_simulation
 {
@@ -63,5 +56,9 @@ namespace particle_simulation
         glm::vec3 currentEmitterLocation;
 
         bool bPause;
+        
+        float frameRate;
+        float maxParticleLifetime;
+        int totalFrames;
     };
 }

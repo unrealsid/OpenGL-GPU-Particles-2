@@ -20,7 +20,8 @@ layout(std430, binding = 0) buffer ParticleBuffer
 uniform int currentFrame; //Flipbook frame
 
 //TODO: Change this to be a uniform
-const ivec2 gridSize = ivec2(5, 5);  // Spritesheet of 5 rows and columns
+uniform ivec2 gridSize; 
+uniform float maxLifetime;
 
 uniform mat4 viewProjMatrix;
 uniform mat4 viewMatrix;
@@ -43,7 +44,6 @@ void main()
     // Sprite sheet animation calculation
     // Use particle lifetime to determine sprite frame
     float lifetime = particle.velocity.w;
-    float maxLifetime = 3.0; // Match the max lifetime in compute shader
 
     // Calculate sprite index based on lifetime
     int totalSprites = gridSize.x * gridSize.y;
