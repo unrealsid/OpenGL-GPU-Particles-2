@@ -22,13 +22,32 @@ namespace
     float aspectRatio = static_cast<float>(WINDOW_WIDTH) / static_cast<float>(WINDOW_HEIGHT);
     float fov = 45.0f;
     
-    std::unique_ptr<particle_simulation::ParticleSimulation> particleSimulation = nullptr;
+    std::unique_ptr<particle_simulation::ParticleSimulation> fireParticleSimulation = nullptr;
+
+    std::unique_ptr<particle_simulation::ParticleSimulation> smokeParticleSimulation = nullptr;
     
     void initScene()
     {
         //Initialize the particle system and call the init method on it
-        particleSimulation = std::make_unique<particle_simulation::ParticleSimulation>(2000, glm::vec3(0.0f, -1.0f, 0.0f));
-        particleSimulation->init();
+        fireParticleSimulation = std::make_unique<particle_simulation::ParticleSimulation>(
+            2000,
+            glm::vec3(0.0f, -1.0f, 0.0f),
+            25,
+            glm::ivec2(5, 5),
+            60.0,
+            5.0, 0.5, "fireSheet5x5_alpha.png");
+        
+        fireParticleSimulation->init();
+
+        smokeParticleSimulation = std::make_unique<particle_simulation::ParticleSimulation>(
+            500,
+            glm::vec3(0.0f, -1.0f, 0.0f),
+            25,
+            glm::ivec2(5, 5),
+            30.0,
+            4.0, 1.0, "smoke_sheet.png");
+
+        smokeParticleSimulation->init();
     }
 }
 
@@ -87,13 +106,6 @@ int main()
     const GLubyte* version = glGetString(GL_VERSION);
     std::cout << "OpenGL version: " << version << std::endl;
 
-    glEnable(GL_PROGRAM_POINT_SIZE);
-
-    GLfloat pointSizeRange[2];
-    glGetFloatv(GL_POINT_SIZE_RANGE, pointSizeRange);
-    std::cout << "Point size range: " << pointSizeRange[0] << " to " << pointSizeRange[1] << std::endl;
-
-
     // Set up camera
     glm::mat4 projection = glm::perspective(glm::radians(fov), aspectRatio, 0.1f, 100.0f);
     glm::mat4 view = glm::lookAt
@@ -111,14 +123,16 @@ int main()
 
         lastTime = currentTime;
         
-        particleSimulation->update(deltaTime);
+        fireParticleSimulation->update(deltaTime);
+        smokeParticleSimulation->update(deltaTime);
         
         // Render here
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         
         // Render smoke
-        particleSimulation->render(view, projection);
+        fireParticleSimulation->render(view, projection);
+        smokeParticleSimulation->render(view, projection);
 
         if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
         {

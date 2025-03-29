@@ -15,6 +15,7 @@ layout(std430, binding = 0) buffer ParticleBuffer
 };
 
 uniform float deltaTime;
+uniform float sphereRadius;
 uniform float maxLifetime;
 uniform vec3 particleEmitterCurrentPos;
 uniform vec3 prevParticleEmitterPos;
@@ -35,9 +36,6 @@ void main()
         // If the particle is dead, respawn it
         if (particles[gid].velocity.w <= 0.0) 
         {
-            // Spherical distribution parameters
-            float sphereRadius = 0.5;  // Radius of the sphere
-    
             // Generate random values for spherical coordinates
             float u = fract(sin(float(gid) * 12.9898) * 43758.5453);  // Random value u
             float v = fract(sin(float(gid) * 78.233) * 43758.5453);   // Random value v
@@ -53,7 +51,7 @@ void main()
                 particleEmitterCurrentPos.x + r * sin(phi) * cos(theta),  // X coordinate
                 particleEmitterCurrentPos.y + r * sin(phi) * sin(theta),  // Y coordinate
                 particleEmitterCurrentPos.z + r * cos(phi),               // Z coordinate
-                0.5 + fract(sin(float(gid) * 56.789) * 43758.5453) * 0.5  // Random size between 0.5 and 1.0
+                1.0 + fract(sin(float(gid) * 56.789) * 43758.5453) * 0.5  // Random size between 0.5 and 1.0
             );
     
             // White smoke with random alpha

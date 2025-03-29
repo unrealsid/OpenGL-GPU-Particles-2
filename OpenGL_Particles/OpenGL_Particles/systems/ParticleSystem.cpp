@@ -8,17 +8,40 @@
 #include "../utilities/ShaderUtils.h"
 #include "../Config.h"
 
-particle_simulation::ParticleSimulation::ParticleSimulation(int maxParticles, const glm::vec3& emitterLocation) : maxParticles(maxParticles)
+particle_simulation::ParticleSimulation::ParticleSimulation(
+    int maxParticles,
+    const glm::vec3& emitterLocation,
+    int totalFrames,
+    glm::ivec2 gridSize,
+    float frameRate,
+    float maxParticleLifetime,
+    float sphereRadius,
+    const std::string& texturePath) :
+    maxParticles(maxParticles),
+    particleBuffer(0),
+    renderVAO(0),
+    billboardVBO(0),
+    renderProgram(0),
+    computeProgram(0), smokeTexture(0),
+    viewProjMatrixLocation(0),
+    deltaTimeLocation(0),
+    viewMatrixLocation(0), texturePath(texturePath),
+    gridSize(gridSize),
+    frameRate(frameRate),
+    maxParticleLifetime(maxParticleLifetime),
+    sphereRadius(sphereRadius),
+    totalFrames(totalFrames)
 {
     rng = std::mt19937(static_cast<unsigned int>(time(nullptr)));
     dist = std::uniform_real_distribution<float>(-1.0f, 1.0f);
     currentEmitterLocation = emitterLocation;
     previousEmitterLocation = glm::vec3(0.0f);
     bPause = true;
-    frameRate = 60.0f;
-    maxParticleLifetime = 5.00f;
-    totalFrames = 25;
-    gridSize = glm::ivec2(5,5);
+
+    // frameRate = 60.0f;
+    // maxParticleLifetime = 5.00f;
+    // totalFrames = 25;
+    // gridSize = glm::ivec2(5, 5);
 }
 
 particle_simulation::ParticleSimulation::~ParticleSimulation()
@@ -74,7 +97,7 @@ void particle_simulation::ParticleSimulation::init()
     int width, height, channels;
 
     if (unsigned char* data = stbi_load(
-        (std::string(RESOURCE_PATH) + "/fireSheet5x5_alpha.png").c_str(),
+        (std::string(RESOURCE_PATH) + "/" + texturePath).c_str(),
         &width,
         &height,
         &channels,
@@ -102,6 +125,7 @@ void particle_simulation::ParticleSimulation::createParticles()
     glUseProgram(computeProgram);
     ShaderUtils::setUniformVec3(computeProgram, "particleEmitterOrigin", currentEmitterLocation);
     ShaderUtils::setUniformFloat(computeProgram, "maxLifetime", maxParticleLifetime);
+    ShaderUtils::setUniformFloat(computeProgram, "sphereRadius", sphereRadius);
     
     for (int i = 0; i < maxParticles; i++)
     {

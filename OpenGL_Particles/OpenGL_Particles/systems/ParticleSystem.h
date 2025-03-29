@@ -18,7 +18,15 @@ namespace particle_simulation
     class ParticleSimulation
     {
     public:
-        ParticleSimulation(int maxParticles, const glm::vec3& emitterLocation);
+        ParticleSimulation(int maxParticles,
+            const glm::vec3& emitterLocation,
+            int totalFrames,
+            glm::ivec2 gridSize,
+            float frameRate,
+            float maxParticleLifetime,
+            float sphereRadius, 
+            const std::string& texturePath);
+        
         ~ParticleSimulation();
     
         void init();
@@ -57,9 +65,12 @@ namespace particle_simulation
 
         bool bPause;
 
+    protected:
+        std::string texturePath;
         glm::ivec2 gridSize;
         float frameRate;
         float maxParticleLifetime;
+        float sphereRadius;
         int totalFrames;
     };
 }
