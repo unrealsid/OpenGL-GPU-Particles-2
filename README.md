@@ -10,6 +10,11 @@ This project implements a particle system using OpenGL with GPU acceleration.
 /OpenGL_Particles
 ├── /debug
 │   └── GL_Debug.h
+├── /ext
+│   ├── /glfw     # Need to download and maybe change name in cmake file.
+│   ├── /glm
+│   └── /stb      # Need to download and maybe change in cmake folder
+│   └── /imgui    # Need to download and maybe change in cmake folder. Not currently used. May be used later.
 ├── /glad
 │   ├── glad.c
 │   ├── glad.h
