@@ -1,6 +1,7 @@
 // smoke_simulation.cpp
 #include "ParticleSystem.h"
 
+#include <iostream>
 #include <GLFW/glfw3.h>
 
 #include "stb_image.h"
@@ -15,8 +16,9 @@ particle_simulation::ParticleSimulation::ParticleSimulation(int maxParticles, co
     previousEmitterLocation = glm::vec3(0.0f);
     bPause = true;
     frameRate = 60.0f;
-    maxParticleLifetime = 3.0f;
+    maxParticleLifetime = 3.00f;
     totalFrames = 25;
+    gridSize = glm::ivec2(5,5);
 }
 
 particle_simulation::ParticleSimulation::~ParticleSimulation()
@@ -94,9 +96,8 @@ void particle_simulation::ParticleSimulation::createParticles()
     std::vector<Particle> particles(maxParticles);
 
     glUseProgram(renderProgram);
-    ShaderUtils::setUniformIVec2(renderProgram, "gridSize", glm::vec2(5, 5));
+    ShaderUtils::setUniformIVec2(renderProgram, "gridSize", gridSize);
     ShaderUtils::setUniformFloat(renderProgram, "maxLifetime", maxParticleLifetime);
-
     
     glUseProgram(computeProgram);
     ShaderUtils::setUniformVec3(computeProgram, "particleEmitterOrigin", currentEmitterLocation);
@@ -118,6 +119,14 @@ void particle_simulation::ParticleSimulation::update(double deltaTime)
     ShaderUtils::setUniformFloat(computeProgram, "deltaTime", deltaTime);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, particleBuffer);
 
+    // Add ping-pong movement using sine function
+    float timeElapsed = static_cast<float>(glfwGetTime());
+    float amplitude = 3.0f; 
+    float frequency = 0.5f;
+
+    // Ping-pong effect along the x-axis
+    currentEmitterLocation.x = amplitude * sin(frequency * timeElapsed);
+
     ShaderUtils::setUniformVec3(computeProgram, "particleEmitterCurrentPos", currentEmitterLocation);
     ShaderUtils::setUniformVec3(computeProgram, "prevParticleEmitterPos", previousEmitterLocation);
 
@@ -128,6 +137,40 @@ void particle_simulation::ParticleSimulation::update(double deltaTime)
     glDispatchCompute(numGroups, 1, 1);
 
     glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+
+    //Debug
+    if (Particle* particles = static_cast<Particle*>(glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY)))
+    {
+        for (int i = 0; i < 2; ++i)
+        {
+
+            std::cout << "Position: "
+            << particles[i].position.x << ", "
+            << particles[i].position.y << ", "
+            << particles[i].position.z << std::endl;
+        
+            std::cout << "  Color: "
+                      << particles[i].color.r << ", "
+                      << particles[i].color.g << ", "
+                      << particles[i].color.b << ", "
+                      << particles[i].color.a << std::endl;
+    
+            std::cout << "  Velocity: "
+                      << particles[i].velocity.x << ", "
+                      << particles[i].velocity.y << ", "
+                      << particles[i].velocity.z << ", Lifetime: "
+                      << particles[i].velocity.w << std::endl;
+    
+            std::cout << "------------------------------------" << std::endl;
+        }
+    
+        // Unmap after reading
+        glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+    }
+    else
+    {
+        std::cerr << "Failed to map buffer!" << std::endl;
+    }   
 }
 
 void particle_simulation::ParticleSimulation::render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)

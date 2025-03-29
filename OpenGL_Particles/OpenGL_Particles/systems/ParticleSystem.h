@@ -56,7 +56,8 @@ namespace particle_simulation
         glm::vec3 currentEmitterLocation;
 
         bool bPause;
-        
+
+        glm::ivec2 gridSize;
         float frameRate;
         float maxParticleLifetime;
         int totalFrames;

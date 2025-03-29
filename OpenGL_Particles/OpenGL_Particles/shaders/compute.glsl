@@ -59,8 +59,8 @@ void main()
             // White smoke with random alpha
             particles[gid].color = vec4
             (
-                1.0, 1.0, 1.0, 
-                0.7 + 0.3 * fract(sin(float(gid) * 12.7) * 43758.5453)
+                0.9, 0.9, 0.9, 
+                0.5 + 0.5 * fract(sin(float(gid) * 12.7) * 43758.5453)
             );
     
             // Random upward velocity
@@ -69,7 +69,7 @@ void main()
                 mix(-0.2, 0.2, fract(sin(float(gid) * 32.8) * 43758.5453)),
                 0.5 + 0.5 * fract(sin(float(gid) * 94.2) * 43758.5453),
                 mix(-0.2, 0.2, fract(sin(float(gid) * 70.3) * 43758.5453)),
-                5.0 * fract(sin(float(gid) * 18.6) * 43758.5453) // Random lifetime between 2-5 seconds
+                maxLifetime * fract(sin(float(gid) * 18.6) * 43758.5453) // Random lifetime upto maxLifetime
             );
         } 
         else 
