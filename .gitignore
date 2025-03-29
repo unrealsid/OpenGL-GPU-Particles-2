@@ -31,3 +31,4 @@
 *.out
 *.app
 OpenGL_Particles/out/
+OpenGL_Particles/ext/

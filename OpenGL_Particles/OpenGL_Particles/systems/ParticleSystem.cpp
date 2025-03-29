@@ -16,7 +16,7 @@ particle_simulation::ParticleSimulation::ParticleSimulation(int maxParticles, co
     previousEmitterLocation = glm::vec3(0.0f);
     bPause = true;
     frameRate = 60.0f;
-    maxParticleLifetime = 3.00f;
+    maxParticleLifetime = 5.00f;
     totalFrames = 25;
     gridSize = glm::ivec2(5,5);
 }
