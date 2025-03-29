@@ -1,6 +1,10 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#define WINDOW_WIDTH  1280  
+#define WINDOW_HEIGHT 720
+
 #define RESOURCE_PATH "@RESOURCE_PATH@"
+#define SHADER_PATH "@SHADER_PATH@"
 
 #endif // CONFIG_H
