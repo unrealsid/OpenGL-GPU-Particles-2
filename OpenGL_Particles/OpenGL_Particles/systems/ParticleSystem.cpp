@@ -156,7 +156,7 @@ void particle_simulation::ParticleSimulation::update(double deltaTime)
 
     previousEmitterLocation = currentEmitterLocation;
 
-    int workGroupSize = 128;
+    int workGroupSize = 512;
     int numGroups = (maxParticles + workGroupSize - 1) / workGroupSize;
     glDispatchCompute(numGroups, 1, 1);
     
