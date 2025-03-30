@@ -31,6 +31,8 @@ namespace particle_simulation
     
         void init();
         void update(double deltaTime);
+        static void beginBlend();
+        static void endBlend();
         void render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix);
 
         void PauseSim();

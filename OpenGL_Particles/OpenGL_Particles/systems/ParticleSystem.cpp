@@ -159,42 +159,53 @@ void particle_simulation::ParticleSimulation::update(double deltaTime)
     int workGroupSize = 128;
     int numGroups = (maxParticles + workGroupSize - 1) / workGroupSize;
     glDispatchCompute(numGroups, 1, 1);
-
-    glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
-
+    
     //Debug
-    if (Particle* particles = static_cast<Particle*>(glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY)))
-    {
-        for (int i = 0; i < 2; ++i)
-        {
+    // if (Particle* particles = static_cast<Particle*>(glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY | GL_MAP_READ_BIT | GL_MAP_PERSISTENT_BIT)))
+    // {
+    //     for (int i = 0; i < 2; ++i)
+    //     {
+    //
+    //         std::cout << "Position: "
+    //         << particles[i].position.x << ", "
+    //         << particles[i].position.y << ", "
+    //         << particles[i].position.z << std::endl;
+    //     
+    //         std::cout << "  Color: "
+    //                   << particles[i].color.r << ", "
+    //                   << particles[i].color.g << ", "
+    //                   << particles[i].color.b << ", "
+    //                   << particles[i].color.a << std::endl;
+    //
+    //         std::cout << "  Velocity: "
+    //                   << particles[i].velocity.x << ", "
+    //                   << particles[i].velocity.y << ", "
+    //                   << particles[i].velocity.z << ", Lifetime: "
+    //                   << particles[i].velocity.w << std::endl;
+    //
+    //         std::cout << "------------------------------------" << std::endl;
+    //     }
+    //
+    //     // Unmap after reading
+    //     glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+    // }
+    // else
+    // {
+    //     std::cerr << "Failed to map buffer!" << std::endl;
+    // }   
+}
 
-            std::cout << "Position: "
-            << particles[i].position.x << ", "
-            << particles[i].position.y << ", "
-            << particles[i].position.z << std::endl;
-        
-            std::cout << "  Color: "
-                      << particles[i].color.r << ", "
-                      << particles[i].color.g << ", "
-                      << particles[i].color.b << ", "
-                      << particles[i].color.a << std::endl;
-    
-            std::cout << "  Velocity: "
-                      << particles[i].velocity.x << ", "
-                      << particles[i].velocity.y << ", "
-                      << particles[i].velocity.z << ", Lifetime: "
-                      << particles[i].velocity.w << std::endl;
-    
-            std::cout << "------------------------------------" << std::endl;
-        }
-    
-        // Unmap after reading
-        glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
-    }
-    else
-    {
-        std::cerr << "Failed to map buffer!" << std::endl;
-    }   
+void particle_simulation::ParticleSimulation::beginBlend()
+{
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDepthMask(GL_FALSE);
+}
+
+void particle_simulation::ParticleSimulation::endBlend()
+{
+    glDepthMask(GL_TRUE);
+    glDisable(GL_BLEND);
 }
 
 void particle_simulation::ParticleSimulation::render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
@@ -213,15 +224,9 @@ void particle_simulation::ParticleSimulation::render(const glm::mat4& viewMatrix
     glBindTexture(GL_TEXTURE_2D, smokeTexture);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, particleBuffer);
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glDepthMask(GL_FALSE);
-
     glBindVertexArray(renderVAO);
     glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, maxParticles);
-
-    glDepthMask(GL_TRUE);
-    glDisable(GL_BLEND);
+    
 }
 
 void particle_simulation::ParticleSimulation::PauseSim()

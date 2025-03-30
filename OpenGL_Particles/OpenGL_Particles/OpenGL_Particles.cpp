@@ -82,7 +82,6 @@ int main()
 
     // Make the OpenGL context current
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(1); // Enable vsync
 
     // Initialize GLAD (after setting the OpenGL context)
     if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
@@ -125,14 +124,20 @@ int main()
         
         fireParticleSimulation->update(deltaTime);
         smokeParticleSimulation->update(deltaTime);
+
+        glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
         
         // Render here
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+
+        particle_simulation::ParticleSimulation::beginBlend();       
         
         // Render smoke
         fireParticleSimulation->render(view, projection);
         smokeParticleSimulation->render(view, projection);
+
+        particle_simulation::ParticleSimulation::endBlend();
 
         if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
         {
